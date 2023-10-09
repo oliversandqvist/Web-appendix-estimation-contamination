@@ -10,9 +10,9 @@ and incomplete event adjudication]() by Kristian Buchardt, Christian Furrer, and
 * [Data application/estimate.R](<Data application/estimate.R>): Load the LEC-DK19 data, run the proposed and naive estimation procedure, plot the results, run the bootstrap procedure, and save the results. This code is used to generate results in Section 6 and Appendix G of the paper. The output is the following.
     * [Data application/Results/paramEst.Rda](<Data application/Results/paramEst.Rda>): Estimated parameter values.
     * [Data application/Results/paramBoot.Rda](<Data application/Results/paramBoot.Rda>): Estimated bootstrap parameter values.
-    * [Data application/Figures/AdjRates.Rda](<Data application/Figures/AdjRates.Rda>): Plot of fitted adjudication hazards.
-    * [Data application/Figures/DelayRates.Rda](<Data application/Figures/DelayRates.Rda>): Plot of fitted reverse time hazards for disability reporting delays.
-    * [Data application/Figures/FittedRates.Rda](<Data application/Figures/FittedRates.Rda>): Plot of fitted biometric hazards.
+    * [Data application/Figures/AdjRates.png](<Data application/Figures/AdjRates.png>): Plot of fitted adjudication hazards.
+    * [Data application/Figures/DelayRates.png](<Data application/Figures/DelayRates.png>): Plot of fitted reverse time hazards for disability reporting delays.
+    * [Data application/Figures/FittedRates.png](<Data application/Figures/FittedRates.png>): Plot of fitted biometric hazards.
 * [Numerical study/run_sim.R](<Numerical study/run_sim.R>): Simulates data, repeatedly run the proposed, Poisson approximation and naive estimation procedure, and save the results. Dependencies and output are as follows.
     * [Numerical study/Simulation/semi_markov_sim.R](<Numerical study/Simulation/semi_markov_sim.R>): Functions to simulate biometric multistate model.
     * [Numerical study/Simulation/semi_markov_sim_adj.R](<Numerical study/Simulation/semi_markov_sim_adj.R>): Functions to simulate adjudication multistate model.
