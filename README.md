@@ -7,7 +7,7 @@ and incomplete event adjudication]() by Kristian Buchardt, Christian Furrer, and
 ## Code structure
 
 * [Data application/LECDK19.RData](<Data application/LECDK19.RData>): The LEC-DK19 data set.
-* [Data application/estimate.R](<Data application/estimate.R>): Loads the LEC-DK19 data, run the proposed and naive estimation procedure, plot the results, run the bootstrap procedure, and save the results. This code is used to generate results in Section 6 and Appendix G of the paper. The output is the following.
+* [Data application/estimate.R](<Data application/estimate.R>): Load the LEC-DK19 data, run the proposed and naive estimation procedure, plot the results, run the bootstrap procedure, and save the results. This code is used to generate results in Section 6 and Appendix G of the paper. The output is the following.
     * [Data application/Results/paramEst.Rda](<Data application/Results/paramEst.Rda>): Estimated parameter values.
     * [Data application/Results/paramBoot.Rda](<Data application/Results/paramBoot.Rda>): Estimated bootstrap parameter values.
     * [Data application/Figures/AdjRates.Rda](<Data application/Figures/AdjRates.Rda>): Plot of fitted adjudication hazards.
