@@ -1,4 +1,4 @@
-# MultistateDelayAdjudication: Event history analysis with reporting delays and incomplete event adjudication
+# Web-appendix-estimation-contamination: Event history analysis with reporting delays and incomplete event adjudication
 
 ## Introduction
 This repository contains code and output to reproduce results in the paper [Estimation for multistate models subject to reporting delays
