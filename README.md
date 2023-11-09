@@ -2,7 +2,7 @@
 
 ## Introduction
 This repository contains code and output to reproduce results in the paper [Estimation for multistate models subject to reporting delays
-and incomplete event adjudication]() by Kristian Buchardt, Christian Furrer, and Oliver Lunding Sandqvist. The subdirectory *Data application* contains the data set LEC-DK19 collected by a large Danish insurer. A total of 416,483 insured are included across five tables concerning disabilities (**disab**), reactivations (**reac**), disability delays (**delay**), disability adjudications (**adjDisab**), and reactivation adjudications (**adjReac**). 
+and incomplete event adjudication](https://arxiv.org/abs/2311.04318) by Kristian Buchardt, Christian Furrer, and Oliver Lunding Sandqvist. The subdirectory *Data application* contains the data set LEC-DK19 collected by a large Danish insurer. A total of 416,483 insured are included across five tables concerning disabilities (**disab**), reactivations (**reac**), disability delays (**delay**), disability adjudications (**adjDisab**), and reactivation adjudications (**adjReac**). 
 
 ## Code structure
 
