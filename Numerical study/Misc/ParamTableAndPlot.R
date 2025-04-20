@@ -1,6 +1,6 @@
 library(tidyverse)
-
-load(file="Results/dfParamEst.Rda")
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+load(file="../Results/dfParamEst.Rda")
 
 rmse <- function(true,obs){
  obsNotNA <- na.omit(obs)

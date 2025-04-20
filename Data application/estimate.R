@@ -327,6 +327,15 @@ est <- function(data, plot=FALSE, naive=FALSE){
     
     modelDisabNaive <- glm(data = dataDisabNaive, family = poisson(link = log), disabOcc ~ age + gender + time - 1, offset = log(expo))
     
+    #disability backcensor 1 year
+    dataDisabBackcens <- data$disab %>%
+      filter(dateStart <= "2018-08-01 UTC") %>%
+      mutate(time=as.numeric(difftime(as.Date(dateStart)+halfMonthInDays,t0, units="days"))/dayYear) %>%
+      group_by(gender,age,time) %>%
+      summarise(disabOcc=sum(disabOcc*multiplicity), expo=sum(expo*multiplicity))%>%
+      filter(expo > 0)
+    
+    modelDisabBackcens <- glm(data = dataDisabBackcens, family = poisson(link = log), disabOcc ~ age + gender + time - 1, offset = log(expo))
     
     #reactivation naive
     dataReacNaive <- data$reac %>% 
@@ -336,6 +345,16 @@ est <- function(data, plot=FALSE, naive=FALSE){
       filter(expo > 0)
     
     modelReacNaive <- glm(data = dataReacNaive, family = poisson(link = log), occReac ~ durDisab + age + gender + time - 1, offset = log(expo))
+    
+    #reactivation backcensor 1 year
+    dataReacBackcens <- data$reac %>% 
+      filter(dateStart <= "2018-08-01 UTC") %>%
+      mutate(time=as.numeric(difftime(as.Date(dateStart)+halfMonthInDays,t0, units="days"))/dayYear) %>%
+      group_by(gender,age,durDisab,time) %>%
+      summarise(occReac=sum(reacOcc*multiplicity), expo=sum(expo*multiplicity))%>%
+      filter(expo > 0)
+    
+    modelReacBackcens <- glm(data = dataReacBackcens, family = poisson(link = log), occReac ~ durDisab + age + gender + time - 1, offset = log(expo))
     
     
     #disability
@@ -349,11 +368,12 @@ est <- function(data, plot=FALSE, naive=FALSE){
     
     dataDisabOENaive <- dataDisabNaive
     dataDisabOENaive$pred <- predict(modelDisabNaive,newdata=dataDisabOENaive, type="response")
+    dataDisabOENaive$predBackcens <- predict(modelDisabBackcens,newdata=dataDisabOENaive, type="response")
     dataDisabOENaiveSum <- dataDisabOENaive %>% 
       mutate(time = round(time/discrete)*discrete) %>% 
       group_by(time) %>%
-      summarise(disabOcc = sum(disabOcc), expo=sum(expo), pred=sum(pred)) %>%
-      mutate(OE = disabOcc/expo, OEpred = pred/expo)
+      summarise(disabOcc = sum(disabOcc), expo=sum(expo), pred=sum(pred), predBackcens=sum(predBackcens)) %>%
+      mutate(OE = disabOcc/expo, OEpred = pred/expo, OEpredBackcens = predBackcens/expo)
     
     
     #reactivation
@@ -371,31 +391,42 @@ est <- function(data, plot=FALSE, naive=FALSE){
     dataReacOENaive <- data$reac  %>%
       mutate(time=as.numeric(difftime(as.Date(dateStart)+halfMonthInDays,t0, units="days"))/dayYear)
     dataReacOENaive$pred <- predict(modelReacNaive,newdata=dataReacOENaive, type="response")
+    dataReacOENaive$predBackcens <- predict(modelReacBackcens,newdata=dataReacOENaive, type="response")
     dataReacNaiveOESum <- dataReacOENaive%>% 
       mutate(time = round(time/discrete)*discrete) %>% 
       group_by(time) %>%
-      summarise(occReac=sum(reacOcc), expo=sum(expo), pred=sum(pred))%>%
+      summarise(occReac=sum(reacOcc), expo=sum(expo), pred=sum(pred), predBackcens=sum(predBackcens))%>%
       filter(expo > 0) %>%
-      mutate(OE = occReac/expo, OEpred = pred/expo)
+      mutate(OE = occReac/expo, OEpred = pred/expo, OEpredBackcens=predBackcens/expo)
     
     png("Figures/FittedRates.png", width = 10, height = 4, units = 'in', res = 300)
     par(mfrow=c(1,2))
     par(mar=c(4,4,2,2))
     
+    idxNotCens <- which(dataDisabOENaiveSum$time <= max(dataDisabOENaiveSum$time)-1)
+    idxCens <- which(dataDisabOENaiveSum$time >= max(dataDisabOENaiveSum$time)-1)
+    
     plot(dataDisabOESum$time,dataDisabOESum$OE, 
          ylim = c(0,0.0051),
          xlab= "time (years)",
          ylab = "disability rate")
-    points(dataDisabOENaiveSum$time,dataDisabOENaiveSum$OE, col=scales::alpha("black", 0.4))
+    points(dataDisabOENaiveSum$time,dataDisabOENaiveSum$OE, col=scales::alpha("black", 0.3))
     lines(dataDisabOESum$time,dataDisabOESum$OEpred, col=scales::alpha("black", 1))
-    lines(dataDisabOENaiveSum$time,dataDisabOENaiveSum$OEpred, col=scales::alpha("black", 0.4))
+    lines(dataDisabOENaiveSum$time,dataDisabOENaiveSum$OEpred, col=scales::alpha("black", 0.3))
+    lines(dataDisabOENaiveSum$time[idxNotCens],dataDisabOENaiveSum$OEpredBackcens[idxNotCens], col=scales::alpha("black", 0.6))
+    lines(dataDisabOENaiveSum$time[idxCens],dataDisabOENaiveSum$OEpredBackcens[idxCens], col=scales::alpha("black", 0.6), lty=2)
+    
+    idxNotCensReac <- which(dataReacNaiveOESum$time <= max(dataReacNaiveOESum$time)-1)
+    idxCensReac <- which(dataReacNaiveOESum$time >= max(dataReacNaiveOESum$time)-1)
     
     plot(dataReacOESum$time,dataReacOESum$OE,
          xlab= "time (years)",
          ylab = "reactivation rate")
-    points(dataReacNaiveOESum$time,dataReacNaiveOESum$OE, col=scales::alpha("black", 0.4))
+    points(dataReacNaiveOESum$time,dataReacNaiveOESum$OE, col=scales::alpha("black", 0.3))
     lines(dataReacOESum$time, dataReacOESum$OEpred)
-    lines(dataReacNaiveOESum$time,dataReacNaiveOESum$OEpred, col=scales::alpha("black", 0.4))
+    lines(dataReacNaiveOESum$time,dataReacNaiveOESum$OEpred, col=scales::alpha("black", 0.3))
+    lines(dataReacNaiveOESum$time[idxNotCensReac],dataReacNaiveOESum$OEpredBackcens[idxNotCensReac], col=scales::alpha("black", 0.6))
+    lines(dataReacNaiveOESum$time[idxCensReac],dataReacNaiveOESum$OEpredBackcens[idxCensReac], col=scales::alpha("black", 0.6), lty=2)
     axis.break(axis = 2, breakpos = 0.09, style="slash")
     
     dev.off()
@@ -580,6 +611,8 @@ est <- function(data, plot=FALSE, naive=FALSE){
     listParamAndNaive$paramList <- paramList
     listParamAndNaive$modelDisabNaive <- modelDisabNaive$coefficients
     listParamAndNaive$modelReacNaive <- modelReacNaive$coefficients
+    listParamAndNaive$modelDisabBackcens <- modelDisabBackcens$coefficients
+    listParamAndNaive$modelReacBackcens <- modelReacBackcens$coefficients
     return(listParamAndNaive)
   }
   
